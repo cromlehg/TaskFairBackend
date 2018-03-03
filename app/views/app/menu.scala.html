@@ -22,7 +22,6 @@
         @userOpt.map { user =>
         <li @if(active == "profile")     { class="active" }><a href="@routes.UsersController.profile(user.id)"><i class="fas fa-user"></i>@views.html.utils.userViewedName(user){ }</a></li>
         <li @if(active == "wallet")      { class="active" }><a href="@routes.WalletController.wallet(user.id)"><i class="fas fa-briefcase"></i> Wallet</a></li>
-        <li @if(active == "dreams")      { class="active" }><a href="@routes.DreamController.dreamsByUser(user.id, 1)"><i class="fas fa-cloud"></i> My dreams </a></li>
         <li @if(active == "logout")      { class="active" }><a href="@routes.UsersController.logout"><i class="fas fa-sign-out-alt"></i> logout </a></li>
         }
       </ul>

@@ -1,5 +1,5 @@
 @(post: models.Post, comments: Seq[models.Comment], user: models.User)(implicit userOpt: Option[models.User], flash: Flash, messages: Messages, req: play.api.mvc.RequestHeader)
-@main("dream") {
+@main("post") {
   <link href="@routes.Assets.versioned("stylesheets/bootstrap-markdown-editor/bootstrap-markdown.min.css")" rel="stylesheet" media="screen">
 } {
   @common.rowXS12Box { 
