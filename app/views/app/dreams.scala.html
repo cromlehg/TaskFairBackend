@@ -1,0 +1,6 @@
+@(posts: Seq[models.Post])(implicit userOpt: Option[User], flash: Flash, messages: Messages)
+@main("index") { } {
+  @common.rowXS12Box {
+    @common.postViewBoxedList(posts)
+  }
+} { }

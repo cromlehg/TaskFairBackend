@@ -1,0 +1,6 @@
+@(viewedUser: models.User)(implicit userOpt: Option[models.User], flash: Flash, messages: Messages) 
+@main("profile") { } {
+@common.rowXS12Box { 
+  @common.userProfilePanel(viewedUser)
+}
+} { }

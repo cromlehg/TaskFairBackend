@@ -1,0 +1,2 @@
+@(resourceOwnerId: Long)(content: Html)(implicit userOpt: Option[models.User])
+@isOwnerRole(resourceOwnerId, models.Roles.CLIENT)(content)(userOpt)

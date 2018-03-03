@@ -1,0 +1,9 @@
+@(user: User)(headContent: Html)
+
+  @(user.name, user.surname) match {
+    case (None, None) => {@user.email}
+    case (Some(name), None) => {user.name}
+    case (None, Some(surname)) => {user.surname}
+    case (name, surname) => {@{user.name}@{headContent}@user.surname}
+    case _ => {@user.email}
+  }

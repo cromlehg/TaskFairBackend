@@ -1,0 +1,23 @@
+@(comment: models.Comment, user: models.User)(content: Html)(implicit userOpt: Option[models.User], flash: Flash, messages: Messages)
+<div class="media">
+  <div class="hidden-id">@comment.id</div>
+  <a class="pull-left" href="#">@userMiniAvatar(user)</a>
+  <div class="media-body">
+    <div class="media-content" id="comment_id_@comment.id">@comment.content</div>
+    <div class="media-panel">
+      @userDefined {
+        <i class="fa fa-comment comment-icon"></i><a href="#" class="create-comment">Comment</a>
+      }
+        <i class="fa fa-calendar comment-icon"></i> @comment.formattedShortDate
+        <i class="fa fa-user comment-icon"></i> <a href="@routes.UsersController.profile(user.id)">@user.login</a>
+    </div>
+    @userDefined {
+      <div class="media-create-comment">
+        <textarea id="comment_text" rows="2"></textarea>
+        <div><a class="send-comment" href="#">Send</a></div>
+      </div>
+    }
+    <div class="media-container">@content</div>
+  </div>
+</div>
+

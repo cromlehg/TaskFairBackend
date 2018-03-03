@@ -1,0 +1,22 @@
+@(inForm: Form[_])(implicit messages: Messages, flash: Flash)
+
+@import helper._
+
+@implicitField = @{ FieldConstructor(views.html.utils.horizontalFormFieldConstructor.f) }
+
+
+@main("login") { } {
+  @common.rowXS12Box {   
+    @helper.form(action = routes.UsersController.auth, 'class -> "form-horizontal") {
+      <legend class="">Login</legend>
+      @helper.inputText(inForm("email"), 'class -> "form-control")
+      @helper.inputPassword(inForm("pass"), 'class -> "form-control")
+      <div class="form-group">
+        <div class="col-xs-offset-2 col-xs-10">
+	      <button class="btn btn-success">Sign in</button>
+		</div>
+	  </div>
+    }
+  } 
+
+} { }(None, flash, messages)

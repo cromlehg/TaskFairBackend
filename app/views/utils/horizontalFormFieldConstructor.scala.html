@@ -1,0 +1,15 @@
+@(elements: helper.FieldElements)
+
+<div class="form-group@if(elements.hasErrors){ has-error}@if(elements.input.toString.contains("</select>")){ form-group-select2}">
+  <label class="col-xs-2 control-label" for="@elements.id">@elements.label</label>
+  <div class="col-xs-10">
+    @elements.input
+    @if(elements.hasErrors) {
+    <span class="help-block">@elements.errors.mkString(", ")</span>
+    } else {
+    <span class="help-block">@elements.infos.mkString(", ")</span>
+    }
+  </div>
+</div>
+
+

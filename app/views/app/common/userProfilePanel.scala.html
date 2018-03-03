@@ -1,0 +1,11 @@
+@(user: models.User)(implicit userOpt: Option[User], flash: Flash, messages: Messages)
+@panelInfo(user.login) {
+  @userImage(user)
+  <div class="col-md-9 col-lg-9">
+    @userInfoTable(user)
+    <!--  <a href="#" class="btn btn-primary">My Sales Performance</a>
+    <a href="#" class="btn btn-primary">Team Sales Performance</a>  -->
+  </div>
+} {
+}    
+

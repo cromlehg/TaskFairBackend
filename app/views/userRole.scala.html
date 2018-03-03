@@ -1,0 +1,6 @@
+@(role: String = null)(content: Html)(implicit userOpt: Option[models.User])
+@userOpt.map { user =>
+  @if(user.roles.contains(models.Roles.ADMIN) || (role != null && user.roles.contains(role))) {
+    @content
+  }
+}

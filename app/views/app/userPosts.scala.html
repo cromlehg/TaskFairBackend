@@ -1,0 +1,8 @@
+@(posts: Seq[models.Post], user: models.User)(implicit userOpt: Option[models.User], flash: Flash, messages: Messages, req: play.api.mvc.RequestHeader)
+@main("dreams") { } {
+  @common.rowXS12Box { 
+    @common.panelInfo("Dreams of " + user.login) {
+      @common.postsList1(posts, user)
+    } { }    
+  }
+} { }

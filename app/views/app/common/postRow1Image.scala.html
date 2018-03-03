@@ -1,0 +1,6 @@
+@(post: models.Post)
+<div class="col-xs-12 col-sm-3 col-md-3">
+  <a href="@routes.DreamController.viewDream(post.id)" class="thumbnail">
+    <img src="@post.image" style="width: 252px; height: 189px;">
+  </a>
+</div>

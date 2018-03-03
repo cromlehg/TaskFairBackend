@@ -1,0 +1,7 @@
+@(comments: Seq[models.Comment], user: models.User)(implicit userOpt: Option[models.User], flash: Flash, messages: Messages)
+@for(seqComment <- comments) { 
+  @commentView(seqComment, seqComment.user) {
+  	@commentsSequenceView(seqComment.nested, seqComment.user)
+  }
+}
+

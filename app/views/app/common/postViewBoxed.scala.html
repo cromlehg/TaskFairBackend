@@ -1,0 +1,19 @@
+@(post: Post)(implicit userOpt: Option[User], flash: Flash, messages: Messages)
+            <div class="col-lg-3 col-md-3">
+              <aside>
+                <img src="@post.image" class="img-responsive" style="height: 200px; width: 100%;">
+                <div class="content-title">
+				  <div class="text-center">
+				    <h3><a href="@routes.DreamController.viewDream(post.id)">@post.title</a></h3>
+				  </div>
+				</div>
+				<div class="content-footer">
+				  <img class="user-small-img" src="@post.user.image">
+				  <span style="font-size: 16px;color: #fff;">@post.user.login</span>
+				  <span class="pull-right">
+				    <a href="#" data-toggle="tooltip" data-placement="left" title="" data-original-title="Comments"><i class="fa fa-comments"></i> 30</a>
+				    <a href="#" data-toggle="tooltip" data-placement="right" title="" data-original-title="Loved"><i class="fa fa-heart"></i> 20</a>                  
+				  </span>
+		        </div>
+              </aside>
+            </div>

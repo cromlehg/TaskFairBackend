@@ -1,0 +1,6 @@
+@(resourceOwnerId: Long)(content: Html)(implicit userOpt: Option[models.User])
+@userOpt.map { user =>
+  @if(user.id == resourceOwnerId) {	
+    @content
+  }
+}

@@ -1,0 +1,24 @@
+@(posts: Seq[models.Post], user: models.User)(implicit userOpt: Option[models.User], flash: Flash, messages: Messages)
+
+  @for(post <- posts) {
+    @postRow1 {
+      @postRow1Image(post)
+      <div class="col-xs-12 col-sm-9 col-md-9">
+        <h1>@post.title</h1>
+        <p></p>
+        <div>
+          <span class="badge">Posted 2012-08-02 20:47:04</span>
+          <div class="pull-right">
+            <span class="label label-default">alice</span>
+            <span class="label label-primary">story</span>
+            <span class="label label-success">blog</span>
+            <span class="label label-info">personal</span>
+            <span class="label label-warning">Warning</span>
+            <span class="label label-danger">Danger</span>         
+          </div>
+        </div>        
+      </div>
+    }
+  }
+
+ 

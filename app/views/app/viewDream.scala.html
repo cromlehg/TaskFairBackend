@@ -1,0 +1,97 @@
+@(post: models.Post, comments: Seq[models.Comment], user: models.User)(implicit userOpt: Option[models.User], flash: Flash, messages: Messages, req: play.api.mvc.RequestHeader)
+@main("dream") {
+  <link href="@routes.Assets.versioned("stylesheets/bootstrap-markdown-editor/bootstrap-markdown.min.css")" rel="stylesheet" media="screen">
+} {
+  @common.rowXS12Box { 
+    @common.panelInfo("Dream") {
+      <div class="col-md-12 col-lg-12">
+        <h3>@post.title</h3>
+        <p>@Html(post.renderFromMarkdownToHTML)</p>
+        @common.commentsView(comments, user)
+      </div> 
+    } { }    
+  }
+} { 
+
+@helper.javascriptRouter("jsRoutes")(
+  routes.javascript.CommentsController.postComment
+)
+
+<script type="text/javascript">
+  function hideCurrentAction(target) {
+    target.hide();
+    target.parent().children('.media-panel').children('.create-comment').show();
+  }
+
+  function showCurrentAction(target) {
+    target.show();
+    target.parent().children('.media-panel').children('.create-comment').hide();
+  }
+
+  function hideAllCommentActions() {
+    $('.media-create-comment').each(function() {
+      hideCurrentAction($(this));
+    });
+  };
+
+  function bindCommentAction(cid) {
+    cid.click(function(e) {
+      e.preventDefault();
+      hideAllCommentActions();
+      target = $(this).parent().parent().children('.media-create-comment');
+      showCurrentAction(target);
+    });
+    target = cid.parent().parent();
+    target.children('.media-create-comment').find('.send-comment').click(function(e) {
+      e.preventDefault();
+      localTarget = $(this);
+      cTextArea = $(this).parent().parent().children('textarea');
+      cText = cTextArea.val();
+      if(cText) {
+        hiddenId = target.parent().parent().children('.hidden-id');
+        commentId = parseInt(hiddenId.html());
+        jsRoutes.controllers.CommentsController.postComment(@post.id, commentId, cText).ajax({
+          success: function(data) {
+            hideCurrentAction(localTarget.parent().parent());
+            cTextArea.val("");
+            inCont = target.parent().children('.media-container');
+            inCont.prepend(data);
+            bindCommentAction($('.create-comment'));
+          },
+          error: function(data) {
+            error("Ошибка", data.responseText);
+          }
+        });
+      } else {
+        error("Error", "Comment can't be empty.");
+      }
+    });
+  };
+
+  function getBindedIds() {
+    hiddenIds = [];
+    $('.hidden-id').each(function() {
+      hiddenIds.push(parseInt($(this).html()));
+    });
+  }
+
+  function bindNotBinded(hiddenIds) {
+    $('.create-comment').each(function() {
+      target = $(this);
+      curId = parseInt(target.parent().parent().parent().children('.hiddenId').html());
+      if($.inArray(curId, hiddenIds) == -1) {
+        bindCommentAction($(this));
+      };
+    });
+  }
+
+  function appendAndBind(container) {
+    ids = getBindedIds();
+    bindNotBinded(ids);
+  }
+
+  appendAndBind($('.media-container'));
+
+</script>
+
+}

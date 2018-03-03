@@ -1,0 +1,4 @@
+@(content: Html)(implicit userOpt: Option[models.User])
+@if(userOpt.isDefined) {
+  @content
+}
