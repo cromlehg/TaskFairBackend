@@ -25,52 +25,41 @@ class RegisterCommonAuthorizable @Inject() (cc: ControllerComponents, dao: DAO, 
 
   protected def createAccount(
     emailPatternName: String,
-    accountType:      Int,
     login:            String,
-    email:            String,
-    companyNameOpt:   Option[String],
-    ITNOpt:           Option[String],
-    IECOpt:           Option[String])(
+    email:            String)(
     f: models.Account => Result): Future[Result] = {
-    dao.createAccount(
-      login,
-      email,
-      AppConstants.INITIAL_DP,
-      accountType,
-      companyNameOpt,
-      ITNOpt,
-      IECOpt) map (_.fold(BadRequest("Can't create account")) { account =>
-        val from = new Email(config getString "sendgrid.from")
-        val subject = config getString "sendgrid.subject"
-        val to = new Email(account.email)
-        val content = new Content(
-          "text/plain",
-          (config getString emailPatternName)
-            .replace("%account.login%", account.login)
-            .replace("%account.confirmCode%", account.confirmCode.get))
-        val mail = new Mail(from, subject, to, content)
-        val sg = new SendGrid(config.getString("sendgrid.apikey"));
-        val request = new com.sendgrid.Request()
-        try {
-          request.setMethod(Method.POST)
-          request.setEndpoint("mail/send")
-          request.setBody(mail.build())
-          val response = sg.api(request)
-          if (response.getStatusCode() == 202)
-            f(account)
-          else {
-            Logger.error("can't send email")
-            Logger.error("status code: " + response.getStatusCode())
-            Logger.error("body: " + response.getBody())
-            Logger.error("headers: " + response.getHeaders())
-            BadRequest("Some problems")
-          }
-        } catch {
-          case e: IOException =>
-            Logger.error(e.toString())
-            BadRequest("Some problems")
+    dao.createAccount(login, email) map (_.fold(BadRequest("Can't create account")) { account =>
+      val from = new Email(config getString "sendgrid.from")
+      val subject = config getString "sendgrid.subject"
+      val to = new Email(account.email)
+      val content = new Content(
+        "text/plain",
+        (config getString emailPatternName)
+          .replace("%account.login%", account.login)
+          .replace("%account.confirmCode%", account.confirmCode.get))
+      val mail = new Mail(from, subject, to, content)
+      val sg = new SendGrid(config.getString("sendgrid.apikey"));
+      val request = new com.sendgrid.Request()
+      try {
+        request.setMethod(Method.POST)
+        request.setEndpoint("mail/send")
+        request.setBody(mail.build())
+        val response = sg.api(request)
+        if (response.getStatusCode() == 202)
+          f(account)
+        else {
+          Logger.error("can't send email")
+          Logger.error("status code: " + response.getStatusCode())
+          Logger.error("body: " + response.getBody())
+          Logger.error("headers: " + response.getHeaders())
+          BadRequest("Some problems")
         }
-      })
+      } catch {
+        case e: IOException =>
+          Logger.error(e.toString())
+          BadRequest("Some problems")
+      }
+    })
   }
 
 }

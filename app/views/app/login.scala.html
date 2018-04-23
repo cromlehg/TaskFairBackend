@@ -1,22 +1,20 @@
-@(inForm: Form[_])(implicit messages: Messages, flash: Flash)
+@(inForm: Form[_])(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
 
-@import helper._
+@implicitVerticalFC = @{ b4.vertical.fieldConstructor() }
 
-@implicitField = @{ FieldConstructor(views.html.utils.horizontalFormFieldConstructor.f) }
+@app.common.commonAuthRegPage("login") {
 
-
-@main("login") { } {
-  @common.rowXS12Box {   
-    @helper.form(action = routes.UsersController.auth, 'class -> "form-horizontal") {
-      <legend class="">Login</legend>
-      @helper.inputText(inForm("email"), 'class -> "form-control")
-      @helper.inputPassword(inForm("pass"), 'class -> "form-control")
-      <div class="form-group">
-        <div class="col-xs-offset-2 col-xs-10">
-	      <button class="btn btn-success">Sign in</button>
-		</div>
-	  </div>
-    }
-  } 
-
-} { }(None, flash, messages)
+  <h2 class="mb-4">Login</h2>
+  <p class="mb-5">Join our amazing community to comment and reward others..</p>
+  
+  @b4.form(routes.AccountsController.processLogin) {
+    @b4.text( inForm("email"), '_label -> "Username" )
+    @b4.text( inForm("pass"), '_label -> "Password" )
+    @b4.submit('_class -> "mt-5", 'class -> "btn btn-outline-primary btn-block"){ Sign in }   
+  }
+      
+  <p class="text-secondary mt-5">
+    Do not have account yet? Sign up as <a href="@routes.AccountsController.registerUser()">user</a>.
+  </p>
+  
+}

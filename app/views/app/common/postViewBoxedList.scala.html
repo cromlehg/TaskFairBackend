@@ -1,6 +1,0 @@
-@(posts: Seq[models.Post])(implicit userOpt: Option[User], flash: Flash, messages: Messages)
-@row {
-  @for(post <- posts) {
-    @postViewBoxed(post)
-  }
-}

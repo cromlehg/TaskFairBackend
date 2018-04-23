@@ -14,6 +14,8 @@ import play.api.mvc.AbstractController
 import play.api.mvc.ControllerComponents
 import play.api.mvc.Request
 import play.api.mvc.Result
+import play.api.mvc.Action
+import models.AccountStatus
 
 class Authorizable @Inject() (cc: ControllerComponents, dao: DAO, config: Config)(implicit ec: ExecutionContext)
   extends AbstractController(cc)
@@ -43,7 +45,7 @@ class Authorizable @Inject() (cc: ControllerComponents, dao: DAO, config: Config
 
   protected def optionalAuthorized[T](f: Option[models.Account] => Future[Result])(implicit request: Request[T], ac: AppContext): Future[Result] =
     request.session.get(SESSION_KEY).fold(f(None))(curSessionKey =>
-      dao.findAccountBySessionKeyAndIPWithBalances(curSessionKey, request.remoteAddress)
+      dao.findAccountBySessionKeyAndIP(curSessionKey, request.remoteAddress)
         flatMap (_.fold(f(None))(user => user.sessionOpt.fold(f(None)) { session =>
           ac.authorizedOpt = Some(user)
           f(Some(user))
@@ -51,17 +53,52 @@ class Authorizable @Inject() (cc: ControllerComponents, dao: DAO, config: Config
 
   protected def onlyAuthorized[T](f: models.Account => Future[Result])(implicit request: Request[T], ac: AppContext): Future[Result] =
     request.session.get(SESSION_KEY).fold(future(BadRequest("Session not found. You shoud authorize before")))(curSessionKey =>
-      dao.findAccountBySessionKeyAndIPWithBalances(curSessionKey, request.remoteAddress)
+      dao.findAccountBySessionKeyAndIP(curSessionKey, request.remoteAddress)
         flatMap (_.fold(future(BadRequest("Can't find session. You should authorize before")))(user =>
           sessionNotExpired(user)(f))))
 
   protected def onlyAuthorizedOwnerUser[T](userId: Long)(f: models.Account => Future[Result])(implicit request: Request[T], ac: AppContext): Future[Result] =
     request.session.get(SESSION_KEY).fold(future(BadRequest("Session not found. You shoud authorize before")))(curSessionKey =>
-      dao.findAccountBySessionKeyAndIPWithBalances(curSessionKey, request.remoteAddress)
+      dao.findAccountBySessionKeyAndIP(curSessionKey, request.remoteAddress)
         flatMap (_.fold(future(BadRequest("Can't find session. You should authorize before")))(user =>
-          sessionNotExpired(user)(if (user.id == userId) f else { account => future(BadRequest("Access forbidden")) } ))))
+          sessionNotExpired(user)(if (user.id == userId) f else { account => future(BadRequest("Access forbidden")) }))))
 
   protected def sessionKeyStr(userId: Long)(implicit request: Request[_]) =
     BCrypt.hashpw(userId + System.currentTimeMillis + request.remoteAddress, BCrypt.gensalt())
+
+  protected def authCheckBlock(loginOrEmail: String, pwd: String)(error: String => Future[Result])(success: (models.Account, models.Session) => Future[Result])(implicit request: Request[_]): Future[Result] =
+    dao.findAccountByLoginOrEmail(loginOrEmail) flatMap (_.fold(error("Login or password not found")) { account =>
+
+      if (account.accountStatus == AccountStatus.WAITE_CONFIRMATION) error("Email wait confirmation!") else
+        account.hash.fold(error("Login or password not found")) { hash =>
+          if (BCrypt.checkpw(pwd, hash)) {
+
+            def createSession = {
+              val expireTime = System.currentTimeMillis + AppConstants.SESSION_EXPIRE_TYME
+              val sessionKey = sessionKeyStr(account.id)
+              dao.createSession(
+                account.id,
+                request.remoteAddress,
+                sessionKey,
+                System.currentTimeMillis,
+                expireTime) flatMap (_.fold(future(BadRequest("Coludn't create session"))) { session =>
+                  success(account, session).map(_.withSession(SESSION_KEY -> sessionKey))
+                })
+            }
+
+            request.session.get(SESSION_KEY).fold(createSession)(curSessionKey =>
+              dao.findSessionByAccountIdSessionKeyAndIP(account.id, request.remoteAddress, curSessionKey)
+                flatMap (_.fold(createSession)(session => error("You should logout before."))))
+
+          } else error("Login or password not found")
+
+        }
+    })
+
+  //  def withAppContext[T](bodyParser: play.api.mvc.BodyParser[T])(f: (Request[T], AppContext) => Future[Result]): Action[T] =
+  //    Action.async[T](bodyParser)(request => f(request, new AppContext()))
+  //
+  //  def withAppContext(f: (Request[play.api.mvc.AnyContent], AppContext) => Future[Result]): Action[play.api.mvc.AnyContent] =
+  //    withAppContext(parse.anyContent)(f)
 
 }

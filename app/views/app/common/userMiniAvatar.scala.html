@@ -1,3 +1,0 @@
-@(user: models.User)
-<img onСlick="window.location.href='@routes.UsersController.profile(user.id)'" class="img-circle media-object" style="width: 50px; height: 50px;" src="@user.avatar.getOrElse(routes.Assets.versioned("images/guest.jpg"))"> 
-  

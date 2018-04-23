@@ -1,51 +1,24 @@
 package models
 
-class AccountStatus(val id: Int, val status: String) {
-
-  override def hashCode = 17 * status.hashCode
-
-  override def equals(obj: Any) = obj match {
-    case s: AccountStatus => s.status == status
-    case _                => false
-  }
-
-  override def toString = status
-
-}
-
 object AccountStatus {
 
-  val ACTIVE = "active"
+  val CONFIRMED = 0
 
-  val LOCKED = "locked"
-  
-  val NEEDS_APPROVE = "needs approve"
+  val WAITE_CONFIRMATION = 1
 
-  def apply(id: Int, status: String): AccountStatus =
-    new AccountStatus(id, status)
+  def idByStr(str: String): Option[Int] =
+    str match {
+      case "confirmed"          => Some(CONFIRMED)
+      case "waite confirmation" => Some(WAITE_CONFIRMATION)
+      case _                    => None
+    }
 
-}
-
-object AccountStatusApprove {
-
-  def apply(): AccountStatus =
-    new AccountStatus(3, AccountStatus.NEEDS_APPROVE)
-
-}
-
-object AccountStatusActive {
-
-  def apply(): AccountStatus =
-    new AccountStatus(1, AccountStatus.ACTIVE)
+  def strById(id: Int): Option[String] =
+    id match {
+      case 0 => Some("confirmed")
+      case 1 => Some("waite confirmation")
+      case _ => None
+    }
 
 }
-
-object AccountStatusLocked {
-
-  def apply(): AccountStatus =
-    new AccountStatus(2, AccountStatus.LOCKED)
-
-}
-
-
 

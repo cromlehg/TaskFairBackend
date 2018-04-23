@@ -1,6 +1,8 @@
-@(viewedUser: models.User)(implicit userOpt: Option[models.User], flash: Flash, messages: Messages) 
-@main("profile") { } {
-@common.rowXS12Box { 
-  @common.userProfilePanel(viewedUser)
-}
+@(active: String, account: models.Account)(content: Html)(implicit flash: Flash, messages: Messages, ac: controllers.AppContext)
+@app.common.main("profile") { } {
+  @profileHeader(account)
+  @profileMenu(active, account)
+  @base.common.components.container() {
+    @content 
+  }
 } { }

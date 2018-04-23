@@ -1,0 +1,21 @@
+@(active: String)(implicit ac: controllers.AppContext)
+<nav class="navbar navbar-expand-md fixed-top navbar-light bg-light bs-navbar-top">
+  <div class="container">
+    <a class="navbar-brand" href="#">
+     <img src="/assets/images/logo.png" alt="@controllers.AppConstants.APP_NAME" width="36" height="36"/>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      <ul class="navbar-nav ml-auto">
+        @if(ac.authorizedOpt.isDefined) {
+        }
+        @if(ac.authorizedOpt.isEmpty) {         
+          @base.common.menuItem(active, "register", routes.AccountsController.registerUser(), Some("fa-user-plus"))
+          @base.common.menuItem(active, "login", routes.AccountsController.login(), Some("sign-in-alt"))
+        }
+      </ul>
+    </div>
+  </div>
+</nav>
